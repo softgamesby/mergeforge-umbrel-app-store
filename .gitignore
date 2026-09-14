@@ -1,0 +1,16 @@
+.env
+.env.*
+*.log
+*.tmp
+*.swp
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+dist/
+build/
+coverage/
+.DS_Store
+*.tar
+*.tar.gz
+*.zip

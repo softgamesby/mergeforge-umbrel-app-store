@@ -1,0 +1,27 @@
+manifestVersion: 1
+id: mergeforge-ltc-doge
+name: MergeForge
+category: bitcoin
+version: "0.1.0"
+tagline: Private LTC + DOGE merged solo mining on Umbrel
+description: >-
+  MergeForge is a self-hosted Scrypt merged-mining hub for Litecoin and Dogecoin.
+  The initial release uses c2pool in private solo mode with embedded Litecoin and Dogecoin
+  SPV backends, a dedicated LG07-compatible Stratum endpoint, and a custom Umbrel dashboard.
+  No wallet private keys or seed phrases are required.
+developer: Mikal
+website: https://github.com/softgamesby
+submitter: Mikal
+submission: https://github.com/softgamesby
+repo: https://github.com/softgamesby
+support: https://github.com/softgamesby
+port: 8096
+gallery: []
+releaseNotes: >-
+  Initial developer release with LTC + DOGE merged-mining backend, LG07 Stratum setup,
+  modern MergeForge dashboard, persistent backend state, security-first networking,
+  public receiving-address support section, and restart-safe Umbrel packaging.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

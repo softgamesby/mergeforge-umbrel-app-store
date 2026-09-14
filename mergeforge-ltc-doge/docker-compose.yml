@@ -1,0 +1,83 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: mergeforge-ltc-doge_web_1
+      APP_PORT: 8096
+      PROXY_AUTH_WHITELIST: "/api/*"
+
+  c2pool:
+    image: mergeforge-c2pool:0.1.0
+    restart: on-failure
+    stop_grace_period: 30s
+    init: true
+    command:
+      - /usr/local/bin/c2pool-ltc
+      - --solo
+      - --embedded-ltc
+      - --embedded-doge
+      - --worker-port
+      - "3333"
+      - --web-port
+      - "8080"
+      - --http-host
+      - 0.0.0.0
+      - --data-dir
+      - /data
+      - --log-level
+      - info
+      - --log-rotation-mb
+      - "20"
+      - --log-max-mb
+      - "100"
+    ports:
+      - "3333:3333/tcp"
+    volumes:
+      - ${APP_DATA_DIR}/data/c2pool:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "sh", "-c", "wget -qO- http://127.0.0.1:8080/ >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_period: 45s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    image: mergeforge-web:0.1.0
+    restart: on-failure
+    stop_grace_period: 10s
+    init: true
+    environment:
+      PORT: "8096"
+      C2POOL_URL: http://mergeforge-ltc-doge_c2pool_1:8080
+      STRATUM_PORT: "3333"
+      APP_VERSION: "0.1.0"
+      DATA_DIR: /data
+    volumes:
+      - ${APP_DATA_DIR}/data/app:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      - c2pool
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8096/api/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

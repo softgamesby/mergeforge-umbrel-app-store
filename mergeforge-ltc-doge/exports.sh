@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+export APP_MERGEFORGE_STRATUM_PORT="3333"
+export APP_MERGEFORGE_WEB_PORT="8096"
