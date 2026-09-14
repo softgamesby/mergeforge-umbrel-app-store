@@ -1,62 +1,244 @@
-# MergeForge Community Store — Initial Developer Package
+# MergeForge
 
-This archive contains a first installable/developer-ready Umbrel Community App for **MergeForge**, a private Litecoin + Dogecoin Scrypt merged-mining hub inspired by the engineering discipline used for DigiForge.
+### Private LTC + DOGE merged solo mining for Umbrel
 
-## Important status
+**MergeForge** is a self-hosted Scrypt merged-mining application for Umbrel, designed for home miners such as the **Lucky Miner LG07**.
 
-Version **0.1.0 is a developer preview**. It is designed to be installed, started, and tested with a real Lucky Miner LG07, but it is **not yet a public production release**. Do not treat accepted shares as proof that LTC or DOGE block payout behavior has been fully validated. Physical acceptance testing is still required before public release.
+Mine **Litecoin (LTC)** as the parent chain while simultaneously participating in **Dogecoin (DOGE) AuxPoW merged mining** through one local Stratum connection.
 
-## Initial backend choice
+> **Developed by Mikal**
 
-The original specification requested two pruned full nodes plus a custom AuxPoW Stratum engine. That remains a valid long-term architecture, but it is not the simplest safe first milestone. This initial package uses **c2pool** in private solo mode because its current LTC implementation includes Scrypt Stratum, VARDIFF, embedded Litecoin/Dogecoin SPV backends, and LTC+DOGE merged mining. This keeps the first app small enough to validate on real hardware before we add optional full-node mode.
+---
 
-This is a deliberate simplification, not a silent change.
+## MergeForge 0.1.0 Developer Preview
 
-## What is included
+MergeForge is currently in private development and physical hardware validation.
 
-- Umbrel app manifest and Compose packaging
-- MergeForge custom dark dashboard
-- c2pool source-build container pinned to `v0.2.0`
-- Persistent c2pool state under `${APP_DATA_DIR}/data/c2pool`
-- LG07-facing Scrypt Stratum on host port `3333`
-- Umbrel-authenticated dashboard via `app_proxy`
-- No wallet private keys, seeds, or Docker socket
-- No privileged containers
-- Conservative Docker log limits
-- Public gift/support addresses and QR codes, styled like DigiForge
-- Local setup storage with restrictive permissions
-- Build and validation scripts
-- Refined master project prompt in `docs/MASTER_PROMPT.md`
+The initial developer release is designed to:
 
-## First install workflow
+- install as an Umbrel Community App
+- provide a modern MergeForge dashboard
+- run a local LTC + DOGE merged-mining backend
+- accept Scrypt ASIC connections over Stratum V1
+- support Lucky Miner LG07 testing
+- persist backend state across Umbrel restarts
+- keep mining infrastructure private and self-hosted
+- require only public receiving addresses
+- never request wallet private keys or seed phrases
 
-This package intentionally uses locally built images until the images are physically tested and published to GHCR by the project owner.
+> **Developer Preview:** accepted Stratum shares are not proof that an LTC or DOGE block has been found. Full reward and merged-block behavior must be verified through physical testing before production release.
 
-```bash
-cd mergeforge-initial/mergeforge-ltc-doge
-./scripts/build-images.sh
+---
+
+## Mining Architecture
+
+The initial MergeForge developer preview uses a lightweight **c2pool-based** LTC + DOGE merged-mining backend.
+
+Current design:
+
+- Scrypt mining
+- Stratum V1
+- Litecoin parent-chain work
+- Dogecoin AuxPoW merged mining
+- VARDIFF
+- persistent backend state
+- one local miner connection
+- no custodial payout wallet
+
+This architecture is intentionally kept small while real LG07 behavior is validated. An advanced full-node mode using dedicated Litecoin Core and Dogecoin Core containers may be evaluated later.
+
+---
+
+## Lucky Miner LG07
+
+Initial miner configuration:
+
+```text
+Pool
+stratum+tcp://YOUR-UMBREL-IP:3333
+
+Username
+YOUR_LITECOIN_RECEIVING_ADDRESS
+
+Password
+x
 ```
 
-After the images build, copy the community-store directory into your private development repository or Umbrel Community App Store workflow. Do not develop directly inside Umbrel's managed app-store checkout.
+Example pool URL:
 
-## LG07 initial settings
+```text
+stratum+tcp://192.168.8.109:3333
+```
 
-- Pool: `stratum+tcp://YOUR-UMBREL-IP:3333`
-- Username: your Litecoin receiving address
-- Password: `x`
+The exact payout and worker semantics of the selected backend will be confirmed during physical LG07 acceptance testing before production release.
 
-The first physical test should confirm the exact worker/payout behavior used by the selected c2pool release before public release.
+---
 
-## Planned refinement after first physical test
+## Features
 
-1. Confirm LG07 subscribe/authorize/job/share flow.
-2. Confirm server-side accepted/rejected shares.
-3. Confirm LTC and DOGE merged-mining candidate behavior.
-4. Verify payout/address behavior on a safe network path before trusting mainnet rewards.
-5. Decide whether to retain embedded SPV mode or add an **Advanced Full Node Mode** with official pruned Litecoin Core and Dogecoin Core containers.
-6. Pin final multi-arch production images by immutable registry digest.
-7. Add richer charts/history only after authoritative backend fields are mapped.
+| Feature | Status |
+|---|---|
+| Umbrel Community App | Included |
+| Modern MergeForge dashboard | Included |
+| Scrypt Stratum V1 | Included |
+| Lucky Miner LG07 support | Testing |
+| Litecoin parent mining | Included |
+| Dogecoin AuxPoW merged mining | Testing |
+| Variable difficulty | Included |
+| Persistent backend state | Included |
+| Umbrel-authenticated dashboard | Included |
+| Public receiving address only | Included |
+| Private keys required | Never |
+| Seed phrases required | Never |
+| Docker socket access | No |
+| Privileged containers | No |
+| Production release | Not yet |
+
+---
 
 ## Security
 
-MergeForge never asks for seed phrases or private keys. Support/gift addresses in the dashboard are public receiving addresses only.
+MergeForge is designed to remain non-custodial.
+
+The application must never request or store:
+
+- private keys
+- seed phrases
+- mnemonic phrases
+- wallet recovery phrases
+
+Mining configuration uses public receiving addresses only.
+
+The application also avoids:
+
+- privileged containers
+- host networking
+- Docker socket access
+- public database ports
+- unnecessary administrative interfaces
+- hard-coded production secrets
+
+Persistent mining data is designed to survive normal Umbrel restarts and updates.
+
+---
+
+## Project Structure
+
+```text
+mergeforge-ltc-doge/
+├── c2pool/
+├── docs/
+├── scripts/
+├── web/
+├── docker-compose.yml
+├── exports.sh
+├── umbrel-app.yml
+├── CHANGELOG.md
+├── SECURITY.md
+└── VERSIONS.md
+```
+
+The repository root also contains the Umbrel Community App Store manifest.
+
+---
+
+## Development Workflow
+
+MergeForge follows the same release discipline used for DigiForge:
+
+1. develop privately
+2. validate configuration and source
+3. build local images
+4. test installation on Umbrel
+5. physically test the Lucky Miner LG07
+6. measure accepted, rejected, stale and duplicate shares
+7. verify real LTC + DOGE merged-mining behavior
+8. perform managed Umbrel restart testing
+9. audit exposed ports
+10. build final release images
+11. pin immutable container digests
+12. update documentation and screenshots
+13. publish only after release validation
+
+The managed Umbrel app-store checkout is not used as the primary development directory.
+
+---
+
+# Support MergeForge
+
+If MergeForge is useful to you and you would like to support continued development, voluntary contributions can be sent to the public receiving addresses below.
+
+### Bitcoin
+
+```text
+bc1qhaj04fx5rts85ypavgxwgvlg44jhgje7ymsq0u
+```
+
+### Ethereum
+
+```text
+0x0E9f6aeb5537Dcca347c0c858989dd10CDBBB7b2
+```
+
+### Dogecoin
+
+```text
+D7zbwfjWY1KzWgtBtsiuhbdcoGutFH8pkd
+```
+
+### Litecoin
+
+```text
+ltc1q67h4p7durruk8xkjz3yh6v3jrua5jxh9yy3s9q
+```
+
+### DigiByte
+
+```text
+dgb1qy4h02rhasx2f8q7whn4sanfsdhgajhek34dsv5
+```
+
+> Support addresses are public receiving addresses only. Mining rewards are controlled by the mining configuration. Support is entirely optional and does not provide additional features, mining advantages, or privileges.
+
+---
+
+## Project Status
+
+**Current version:** `0.1.0-dev`
+
+**Current milestone:** Lucky Miner LG07 physical mining validation
+
+Planned next stages include:
+
+- backend telemetry refinement
+- authoritative accepted/rejected-share statistics
+- merged-mining health monitoring
+- block candidate history
+- richer performance charts
+- managed Umbrel restart testing
+- immutable GHCR release images
+- final Umbrel branding and screenshots
+
+---
+
+## Important Mining Notice
+
+Solo mining is probabilistic.
+
+An accepted Stratum share is not necessarily a Litecoin block or Dogecoin AuxPoW block.
+
+MergeForge should only report a block as found or accepted when the authoritative mining backend or blockchain node confirms it.
+
+---
+
+## License
+
+See [`mergeforge-ltc-doge/LICENSE`](mergeforge-ltc-doge/LICENSE).
+
+---
+
+<p align="center">
+  <strong>MergeForge</strong><br>
+  Litecoin · Dogecoin · Scrypt · AuxPoW · Solo Mining · Umbrel<br><br>
+  Developed by Mikal
+</p>
