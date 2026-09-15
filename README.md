@@ -1,4 +1,14 @@
-# MergeForge
+<p align="center">
+  <img src="mergeforge-ltc-doge/web/icon.svg" alt="MergeForge" width="112">
+</p>
+
+<h1 align="center">MergeForge</h1>
+
+<p align="center">
+  <strong>Private LTC + DOGE merged solo mining for Umbrel</strong><br>
+  Developed by Mikal
+</p>
+
 
 ### Private LTC + DOGE merged solo mining for Umbrel
 
@@ -164,39 +174,25 @@ The managed Umbrel app-store checkout is not used as the primary development dir
 
 ---
 
-# Support MergeForge
+## Support MergeForge
 
-If MergeForge is useful to you and you would like to support continued development, voluntary contributions can be sent to the public receiving addresses below.
+<div align="center">
 
-### Bitcoin
+### Support Continued Development
 
-```text
-bc1qhaj04fx5rts85ypavgxwgvlg44jhgje7ymsq0u
-```
+MergeForge is independently developed by **Mikal**.
 
-### Ethereum
+If MergeForge is useful to you and you would like to support continued development, voluntary contributions can be sent using one of the public receiving addresses below.
 
-```text
-0x0E9f6aeb5537Dcca347c0c858989dd10CDBBB7b2
-```
+</div>
 
-### Dogecoin
-
-```text
-D7zbwfjWY1KzWgtBtsiuhbdcoGutFH8pkd
-```
-
-### Litecoin
-
-```text
-ltc1q67h4p7durruk8xkjz3yh6v3jrua5jxh9yy3s9q
-```
-
-### DigiByte
-
-```text
-dgb1qy4h02rhasx2f8q7whn4sanfsdhgajhek34dsv5
-```
+| Network | Public Receiving Address | QR |
+| --- | --- | :---: |
+| **Bitcoin (BTC)** | `bc1qhaj04fx5rts85ypavgxwgvlg44jhgje7ymsq0u` | <img src="mergeforge-ltc-doge/web/support/btc.png" width="110" alt="Bitcoin support QR"> |
+| **Ethereum (ETH)** | `0x0E9f6aeb5537Dcca347c0c858989dd10CDBBB7b2` | <img src="mergeforge-ltc-doge/web/support/eth.png" width="110" alt="Ethereum support QR"> |
+| **Dogecoin (DOGE)** | `D7zbwfjWY1KzWgtBtsiuhbdcoGutFH8pkd` | <img src="mergeforge-ltc-doge/web/support/doge.png" width="110" alt="Dogecoin support QR"> |
+| **Litecoin (LTC)** | `ltc1q67h4p7durruk8xkjz3yh6v3jrua5jxh9yy3s9q` | <img src="mergeforge-ltc-doge/web/support/ltc.png" width="110" alt="Litecoin support QR"> |
+| **DigiByte (DGB)** | `dgb1qy4h02rhasx2f8q7whn4sanfsdhgajhek34dsv5` | <img src="mergeforge-ltc-doge/web/support/dgb.png" width="110" alt="DigiByte support QR"> |
 
 > Support addresses are public receiving addresses only. Mining rewards are controlled by the mining configuration. Support is entirely optional and does not provide additional features, mining advantages, or privileges.
 
