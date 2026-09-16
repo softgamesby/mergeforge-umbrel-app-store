@@ -1,7 +1,9 @@
 FROM ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254 AS fetch
 
 ARG LITECOIN_VERSION=0.21.5.8
-ARG LITECOIN_SHA256=43200c9f9d65ebc126ea5833ca9429e144c4b3273da6bb9f4e89fd7450ab1be9
+ARG TARGETARCH
+ARG LITECOIN_SHA256_AMD64=43200c9f9d65ebc126ea5833ca9429e144c4b3273da6bb9f4e89fd7450ab1be9
+ARG LITECOIN_SHA256_ARM64=129f55defb9045d5635566382c7b9f6fd227d4106a6fc07847a38b25ff9b29a1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl && \
@@ -9,9 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /tmp
 
-RUN curl -fsSLO "https://download.litecoin.org/litecoin-${LITECOIN_VERSION}/linux/litecoin-${LITECOIN_VERSION}-x86_64-linux-gnu.tar.gz" && \
-    echo "${LITECOIN_SHA256}  litecoin-${LITECOIN_VERSION}-x86_64-linux-gnu.tar.gz" | sha256sum -c - && \
-    tar -xzf "litecoin-${LITECOIN_VERSION}-x86_64-linux-gnu.tar.gz"
+RUN case "${TARGETARCH}" in \
+        amd64) ARCH="x86_64"; SHA256="${LITECOIN_SHA256_AMD64}" ;; \
+        arm64) ARCH="aarch64"; SHA256="${LITECOIN_SHA256_ARM64}" ;; \
+        *) echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac && \
+    FILE="litecoin-${LITECOIN_VERSION}-${ARCH}-linux-gnu.tar.gz" && \
+    curl -fsSLO "https://download.litecoin.org/litecoin-${LITECOIN_VERSION}/linux/${FILE}" && \
+    echo "${SHA256}  ${FILE}" | sha256sum -c - && \
+    tar -xzf "${FILE}"
 
 FROM ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254
 
