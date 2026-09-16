@@ -1,0 +1,50 @@
+name: ARM64 Runtime Smoke Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  smoke:
+    name: ARM64 runtime
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test web
+        run: |
+          docker run --rm --pull=always --platform linux/arm64 \
+            ghcr.io/softgamesby/mergeforge-web@sha256:3ed1a8fbe31b2726c84c32ac0dccc2be88ead714a6ed2256571e9a0921eb512b \
+            python --version
+
+      - name: Test c2pool
+        run: |
+          docker run --rm --pull=always --platform linux/arm64 \
+            ghcr.io/softgamesby/mergeforge-c2pool@sha256:0c007199a8c4557ae8ac931997bb123b9245cbaba0f2ed423a36db24a08c1420 \
+            /usr/local/bin/c2pool-ltc --help
+
+      - name: Test Litecoin Core
+        run: |
+          docker run --rm --pull=always --platform linux/arm64 \
+            ghcr.io/softgamesby/mergeforge-litecoin@sha256:141d45221160c11f4cf8e377d958bc4911b0ca83710dd6f639c3b4de8594d8ab \
+            --version
+
+      - name: Test Dogecoin Core
+        run: |
+          docker run --rm --pull=always --platform linux/arm64 \
+            ghcr.io/softgamesby/mergeforge-dogecoin@sha256:74e1d84794e457b35d1a3eea6ee3bc2d3e4060b9a15b6c860fb39b86a84f752b \
+            --version
