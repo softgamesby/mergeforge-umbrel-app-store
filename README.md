@@ -200,7 +200,7 @@ If MergeForge is useful to you and you would like to support continued developme
 
 ## Project Status
 
-**Current version:** `0.1.0-dev`
+**Current version:** `0.1.0` (developer preview)
 
 **Current milestone:** Lucky Miner LG07 physical mining validation
 
