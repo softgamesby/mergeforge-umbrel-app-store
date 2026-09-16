@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 
 PORT=int(os.getenv('PORT','8096'))
 C2POOL=os.getenv('C2POOL_URL','http://c2pool:8080').rstrip('/')
+NODE_STATUS=os.getenv('NODE_STATUS_URL','http://node_status:8097').rstrip('/')
 VERSION=os.getenv('APP_VERSION','0.1.0')
 STRATUM=os.getenv('STRATUM_PORT','3333')
 DATA=Path(os.getenv('DATA_DIR','/data'))
@@ -48,6 +49,20 @@ def backend_snapshot():
         out[p]=d
     return reachable,out
 
+def node_snapshot(timeout=5):
+    try:
+        req=urllib.request.Request(
+            NODE_STATUS + '/status',
+            headers={'User-Agent':'MergeForge/0.1.0'}
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read())
+    except Exception as e:
+        return {
+            'litecoin': {'online':False,'ready':False,'error':str(e)[:200]},
+            'dogecoin': {'online':False,'ready':False,'error':str(e)[:200]}
+        }
+
 def valid_ltc_address(s):
     s=s.strip()
     return bool(s) and (s.startswith('ltc1') or s[0:1] in {'L','M','3'}) and 26 <= len(s) <= 90
@@ -69,8 +84,8 @@ class H(BaseHTTPRequestHandler):
         p=urlparse(self.path).path
         if p=='/api/health': return self.send_json({'ok':True,'version':VERSION})
         if p=='/api/status':
-            cfg=load_config(); ok,data=backend_snapshot()
-            return self.send_json({'version':VERSION,'backendOnline':ok,'configured':valid_ltc_address(cfg['ltcAddress']) and valid_doge_address(cfg['dogeAddress']),'config':cfg,'stratumPort':STRATUM,'uptimeSeconds':int(time.time()-START),'backend':data})
+            cfg=load_config(); ok,data=backend_snapshot(); nodes=node_snapshot()
+            return self.send_json({'version':VERSION,'backendOnline':ok,'configured':valid_ltc_address(cfg['ltcAddress']) and valid_doge_address(cfg['dogeAddress']),'config':cfg,'stratumPort':STRATUM,'uptimeSeconds':int(time.time()-START),'backend':data,'nodes':nodes})
         if p.startswith('/api/backend/'):
             sub='/' + p[len('/api/backend/'):]
             d=fetch(sub); return self.send_json(d,502 if '_error' in d else 200)

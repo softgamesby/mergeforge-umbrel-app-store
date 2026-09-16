@@ -3,7 +3,6 @@ services:
     environment:
       APP_HOST: mergeforge-ltc-doge_web_1
       APP_PORT: 8096
-      PROXY_AUTH_WHITELIST: "/api/*"
 
   init:
     image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:3ed1a8fbe31b2726c84c32ac0dccc2be88ead714a6ed2256571e9a0921eb512b
@@ -142,6 +141,48 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  node_status:
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:3ed1a8fbe31b2726c84c32ac0dccc2be88ead714a6ed2256571e9a0921eb512b
+    restart: on-failure
+    stop_grace_period: 10s
+    init: true
+    command:
+      - python
+      - /app/node-status.py
+    environment:
+      NODE_STATUS_PORT: "8097"
+      CONFIG_DIR: /config
+      LITECOIN_RPC_HOST: litecoin
+      DOGECOIN_RPC_HOST: dogecoin
+    volumes:
+      - ${APP_DATA_DIR}/config:/config:ro
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      litecoin:
+        condition: service_healthy
+      dogecoin:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8097/health', timeout=3)
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
   web:
     image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:3ed1a8fbe31b2726c84c32ac0dccc2be88ead714a6ed2256571e9a0921eb512b
     restart: on-failure
@@ -150,6 +191,7 @@ services:
     environment:
       PORT: "8096"
       C2POOL_URL: http://c2pool:8080
+      NODE_STATUS_URL: http://node_status:8097
       STRATUM_PORT: "3333"
       APP_VERSION: "0.1.0"
       DATA_DIR: /data
