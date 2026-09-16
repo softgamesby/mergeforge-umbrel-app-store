@@ -5,7 +5,7 @@ services:
       APP_PORT: 8096
 
   init:
-    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:098718579bad696a101f3fd89a8e4469eb21fd1d0175135691704819a77a55a6
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:48d262c89ab25d7c6c791c230caf282cf76f31ff6303f9a1bc6e0cb3a3b113de
     restart: "no"
     user: "0:0"
     network_mode: none
@@ -142,7 +142,7 @@ services:
         max-file: "3"
 
   node_status:
-    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:098718579bad696a101f3fd89a8e4469eb21fd1d0175135691704819a77a55a6
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:48d262c89ab25d7c6c791c230caf282cf76f31ff6303f9a1bc6e0cb3a3b113de
     restart: on-failure
     stop_grace_period: 10s
     init: true
@@ -184,7 +184,7 @@ services:
         max-file: "2"
 
   web:
-    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:098718579bad696a101f3fd89a8e4469eb21fd1d0175135691704819a77a55a6
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:48d262c89ab25d7c6c791c230caf282cf76f31ff6303f9a1bc6e0cb3a3b113de
     restart: on-failure
     stop_grace_period: 10s
     init: true
