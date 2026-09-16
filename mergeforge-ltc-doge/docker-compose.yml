@@ -6,7 +6,7 @@ services:
       PROXY_AUTH_WHITELIST: "/api/*"
 
   init:
-    image: mergeforge-web:0.1.0
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:3ed1a8fbe31b2726c84c32ac0dccc2be88ead714a6ed2256571e9a0921eb512b
     restart: "no"
     user: "0:0"
     network_mode: none
@@ -26,7 +26,7 @@ services:
         max-file: "2"
 
   litecoin:
-    image: mergeforge-litecoin:0.21.5.8
+    image: ghcr.io/softgamesby/mergeforge-litecoin:0.21.5.8@sha256:141d45221160c11f4cf8e377d958bc4911b0ca83710dd6f639c3b4de8594d8ab
     restart: on-failure
     stop_grace_period: 60s
     init: true
@@ -60,7 +60,7 @@ services:
         max-file: "3"
 
   dogecoin:
-    image: mergeforge-dogecoin:1.14.9
+    image: ghcr.io/softgamesby/mergeforge-dogecoin:1.14.9@sha256:74e1d84794e457b35d1a3eea6ee3bc2d3e4060b9a15b6c860fb39b86a84f752b
     restart: on-failure
     stop_grace_period: 60s
     init: true
@@ -94,7 +94,7 @@ services:
         max-file: "3"
 
   c2pool:
-    image: mergeforge-c2pool:0.1.0
+    image: ghcr.io/softgamesby/mergeforge-c2pool:0.1.0@sha256:0c007199a8c4557ae8ac931997bb123b9245cbaba0f2ed423a36db24a08c1420
     restart: on-failure
     stop_grace_period: 30s
     init: true
@@ -143,7 +143,7 @@ services:
         max-file: "3"
 
   web:
-    image: mergeforge-web:0.1.0
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.0@sha256:3ed1a8fbe31b2726c84c32ac0dccc2be88ead714a6ed2256571e9a0921eb512b
     restart: on-failure
     stop_grace_period: 10s
     init: true
