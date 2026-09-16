@@ -161,13 +161,13 @@ button.save{border:0;border-radius:9px;padding:11px 15px;font-weight:900;backgro
 </section>
 
 <section class="metrics">
-  <div class="card metric"><div class="label">Current hashrate</div><div class="value cyan" id="hashrate">—</div><div class="sub">Live pool hashrate</div></div>
+  <div class="card metric"><div class="label">Current hashrate</div><div class="value cyan" id="hashrate">—</div><div class="sub">Live Stratum hashrate</div></div>
   <div class="card metric"><div class="label">Connected workers</div><div class="value blue" id="workers">—</div><div class="sub">Active miners</div></div>
   <div class="card metric"><div class="label">Accepted shares</div><div class="value green" id="accepted">—</div><div class="sub">Valid shares</div></div>
   <div class="card metric"><div class="label">Rejected shares</div><div class="value red" id="rejected">—</div><div class="sub">Invalid shares</div></div>
-  <div class="card metric"><div class="label">Duplicate / stale</div><div class="value purple-text" id="stale">—</div><div class="sub">Duplicate or stale</div></div>
+  <div class="card metric"><div class="label">Stale shares</div><div class="value purple-text" id="stale">—</div><div class="sub">Expired-job submissions</div></div>
   <div class="card metric"><div class="label">Best share</div><div class="value gold" id="bestShare">—</div><div class="sub">Highest difficulty</div></div>
-  <div class="card metric"><div class="label">Last share age</div><div class="value blue" id="lastShare">—</div><div class="sub">Time since last share</div></div>
+  <div class="card metric"><div class="label">Share difficulty</div><div class="value blue" id="lastShare">—</div><div class="sub">Current VarDiff target</div></div>
   <div class="card metric"><div class="label">Version</div><div class="value purple-text" id="version">0.1.0</div><div class="sub">MergeForge developer preview</div></div>
 </section>
 
@@ -331,21 +331,6 @@ function num(v){
 }
 function fmtInt(v){const n=num(v);return n===null?'—':Math.round(n).toLocaleString()}
 function fmtPct(v){const n=num(v);return n===null?'—':n.toFixed(2)+'%'}
-function norm(k){return String(k).toLowerCase().replace(/[^a-z0-9]/g,'')}
-function findMetric(obj,names,depth=0){
-  if(!obj||typeof obj!=='object'||depth>7)return null;
-  const targets=names.map(norm);
-  for(const [k,v] of Object.entries(obj)){
-    if(targets.includes(norm(k)) && (typeof v==='number'||typeof v==='string')) return v;
-  }
-  for(const v of Object.values(obj)){
-    if(v&&typeof v==='object'){
-      const r=findMetric(v,names,depth+1);
-      if(r!==null)return r;
-    }
-  }
-  return null;
-}
 function formatHash(v){
   const n=num(v); if(n===null)return '—';
   const units=['H/s','kH/s','MH/s','GH/s','TH/s','PH/s'];
@@ -353,11 +338,12 @@ function formatHash(v){
   while(Math.abs(x)>=1000&&i<units.length-1){x/=1000;i++}
   return (x>=100?x.toFixed(0):x>=10?x.toFixed(1):x.toFixed(2))+' '+units[i];
 }
-function secondsAge(v){
-  const n=num(v); if(n===null)return '—';
-  if(n<60)return Math.round(n)+' sec';
-  if(n<3600)return Math.round(n/60)+' min';
-  return (n/3600).toFixed(1)+' h';
+function formatDifficulty(v){
+  const n=num(v);
+  if(n===null||n<=0)return '—';
+  if(n>=1000)return n.toLocaleString(undefined,{maximumFractionDigits:2});
+  if(n>=1)return n.toLocaleString(undefined,{maximumFractionDigits:3});
+  return n.toPrecision(3);
 }
 function setBadge(id,text,good){
   const e=$(id);e.textContent=text;e.className='badge '+(good?'good':'warn');
@@ -411,6 +397,55 @@ function redraw(){
     {data:samples.doge,color:'#e9bd43'}
   ],{min:0,max:100,minLabel:'0%',maxLabel:'100%'});
 }
+function blockTime(ts){
+  const n=num(ts);
+  if(n===null||n<=0)return 'time unavailable';
+  return new Date(n*1000).toLocaleString();
+}
+function blockDetail(block){
+  if(!block)return 'No confirmed block found yet';
+  const conf=num(block.confirmations);
+  const confText=conf===null?'confirmation count unavailable':fmtInt(conf)+' confirmation'+(conf===1?'':'s');
+  return '#'+fmtInt(block.height)+' · '+confText+' · '+blockTime(block.ts);
+}
+function updateBlocks(blocks){
+  if(!blocks?.available){
+    $('ltcBlocksFound').textContent='—';
+    $('dogeBlocksFound').textContent='—';
+    $('totalBlocksFound').textContent='—';
+    $('lastBlockFound').textContent='—';
+    $('ltcLastBlock').textContent='Verified history unavailable';
+    $('dogeLastBlock').textContent='Verified history unavailable';
+    $('lastBlockDetail').textContent='Waiting for c2pool block history';
+    setBadge('blocksStatus','History unavailable',false);
+    return;
+  }
+
+  const ltc=blocks.litecoin||{};
+  const doge=blocks.dogecoin||{};
+
+  $('ltcBlocksFound').textContent=fmtInt(ltc.count||0);
+  $('dogeBlocksFound').textContent=fmtInt(doge.count||0);
+  $('totalBlocksFound').textContent=fmtInt(blocks.total||0);
+
+  $('ltcLastBlock').textContent=ltc.last
+    ? 'Last confirmed: '+blockDetail(ltc.last)
+    : 'No confirmed Litecoin blocks yet';
+
+  $('dogeLastBlock').textContent=doge.last
+    ? 'Last confirmed: '+blockDetail(doge.last)
+    : 'No confirmed Dogecoin blocks yet';
+
+  if(blocks.last){
+    $('lastBlockFound').textContent=blocks.last.chain+' #'+fmtInt(blocks.last.height);
+    $('lastBlockDetail').textContent=blockDetail(blocks.last);
+  }else{
+    $('lastBlockFound').textContent='None yet';
+    $('lastBlockDetail').textContent='No confirmed MergeForge blocks yet';
+  }
+
+  setBadge('blocksStatus','Verified history',true);
+}
 function updateNode(prefix,node){
   const online=!!node?.online;
   const ready=!!node?.ready;
@@ -442,26 +477,21 @@ async function refresh(){
 
     setChip('backendChip',s.backendOnline?'Backend online':'Backend starting',!!s.backendOnline);
 
-    const b=s.backend||{};
-    const hash=findMetric(b,['hashrate','hash_rate','pool_hashrate','pool_hash_rate','local_hash_rate']);
-    const workers=findMetric(b,['workers','worker_count','miners','miner_count','connections']);
-    const accepted=findMetric(b,['accepted','accepted_shares','shares_accepted','valid_shares']);
-    const rejected=findMetric(b,['rejected','rejected_shares','shares_rejected','invalid_shares']);
-    const stale=findMetric(b,['stale','stales','duplicate','duplicates','stale_shares']);
-    const best=findMetric(b,['best_share','bestshare','best_share_difficulty']);
-    const age=findMetric(b,['last_share_age','share_age','lastshareage']);
+    updateBlocks(s.blocksFound||null);
 
-    $('hashrate').textContent=formatHash(hash);
-    $('workers').textContent=fmtInt(workers);
-    $('accepted').textContent=fmtInt(accepted);
-    $('rejected').textContent=fmtInt(rejected);
-    $('stale').textContent=fmtInt(stale);
-    $('bestShare').textContent=best===null?'—':String(best);
-    $('lastShare').textContent=secondsAge(age);
+    const m=s.mining||{};
 
-    if(num(hash)!==null)addSample(samples.hash,num(hash));
+    $('hashrate').textContent=formatHash(m.hashrate);
+    $('workers').textContent=fmtInt(m.workers);
+    $('accepted').textContent=fmtInt(m.acceptedShares);
+    $('rejected').textContent=fmtInt(m.rejectedShares);
+    $('stale').textContent=fmtInt(m.staleShares);
+    $('bestShare').textContent=formatDifficulty(m.bestShareDifficulty);
+    $('lastShare').textContent=formatDifficulty(m.shareDifficulty);
 
-    const wc=num(workers)||0;
+    if(num(m.hashrate)!==null)addSample(samples.hash,num(m.hashrate));
+
+    const wc=num(m.workers)||0;
     setChip('minerChip',wc>0?'LG07 connected':'LG07 waiting',wc>0);
 
     const bothReady=!!l.ready&&!!d.ready;

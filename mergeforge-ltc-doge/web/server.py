@@ -63,6 +63,130 @@ def node_snapshot(timeout=5):
             'dogecoin': {'online':False,'ready':False,'error':str(e)[:200]}
         }
 
+def mining_snapshot(cfg):
+    stats = fetch('/stratum_stats')
+    best = fetch('/best_share')
+
+    out = {
+        'available': False,
+        'hashrate': None,
+        'workers': None,
+        'acceptedShares': None,
+        'rejectedShares': None,
+        'staleShares': None,
+        'shareDifficulty': None,
+        'bestShareDifficulty': None,
+        'bestSharePctOfBlock': None,
+    }
+
+    if isinstance(stats, dict) and '_error' not in stats:
+        pool = stats.get('pool')
+        workers = stats.get('workers')
+
+        if isinstance(pool, dict):
+            out['available'] = True
+            out['hashrate'] = pool.get('hashrate')
+            out['workers'] = pool.get('workers')
+            out['acceptedShares'] = pool.get('total_accepted')
+            out['rejectedShares'] = pool.get('total_rejected')
+            out['staleShares'] = pool.get('total_stale')
+
+        if isinstance(workers, dict) and workers:
+            ltc = str(cfg.get('ltcAddress', '')).strip()
+            doge = str(cfg.get('dogeAddress', '')).strip()
+            worker_name = str(cfg.get('worker', 'LG07')).strip() or 'LG07'
+
+            selected = None
+
+            if valid_ltc_address(ltc) and valid_doge_address(doge):
+                expected = ltc + ',' + doge + '.' + worker_name
+                selected = workers.get(expected)
+
+            # Useful before payout setup, or if only one Stratum worker exists.
+            if not isinstance(selected, dict) and len(workers) == 1:
+                selected = next(iter(workers.values()))
+
+            if isinstance(selected, dict):
+                out['shareDifficulty'] = selected.get('difficulty')
+
+    if isinstance(best, dict) and '_error' not in best:
+        session = best.get('session')
+        if isinstance(session, dict):
+            out['bestShareDifficulty'] = session.get('difficulty')
+            out['bestSharePctOfBlock'] = session.get('pct_of_block')
+
+    return out
+
+def blocks_snapshot():
+    data = fetch('/recent_blocks')
+
+    empty = {
+        'available': False,
+        'litecoin': {'count': 0, 'last': None},
+        'dogecoin': {'count': 0, 'last': None},
+        'total': 0,
+        'last': None,
+    }
+
+    if not isinstance(data, list):
+        return empty
+
+    confirmed = []
+
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+
+        chain = str(item.get('chain', '')).upper()
+        status = str(item.get('status', '')).lower()
+
+        if chain not in {'LTC', 'DOGE'}:
+            continue
+        if item.get('verified') is not True or status != 'confirmed':
+            continue
+
+        try:
+            height = int(item.get('height', item.get('number', 0)) or 0)
+        except (TypeError, ValueError):
+            height = 0
+
+        try:
+            ts = int(item.get('ts', 0) or 0)
+        except (TypeError, ValueError):
+            ts = 0
+
+        try:
+            confirmations = int(item.get('confirmations', 0) or 0)
+        except (TypeError, ValueError):
+            confirmations = 0
+
+        confirmed.append({
+            'chain': chain,
+            'height': height,
+            'hash': str(item.get('hash', ''))[:128],
+            'ts': ts,
+            'confirmations': confirmations,
+        })
+
+    confirmed.sort(key=lambda block: block['ts'], reverse=True)
+
+    ltc = [block for block in confirmed if block['chain'] == 'LTC']
+    doge = [block for block in confirmed if block['chain'] == 'DOGE']
+
+    return {
+        'available': True,
+        'litecoin': {
+            'count': len(ltc),
+            'last': ltc[0] if ltc else None,
+        },
+        'dogecoin': {
+            'count': len(doge),
+            'last': doge[0] if doge else None,
+        },
+        'total': len(confirmed),
+        'last': confirmed[0] if confirmed else None,
+    }
+
 def valid_ltc_address(s):
     s=s.strip()
     return bool(s) and (s.startswith('ltc1') or s[0:1] in {'L','M','3'}) and 26 <= len(s) <= 90
@@ -84,8 +208,8 @@ class H(BaseHTTPRequestHandler):
         p=urlparse(self.path).path
         if p=='/api/health': return self.send_json({'ok':True,'version':VERSION})
         if p=='/api/status':
-            cfg=load_config(); ok,data=backend_snapshot(); nodes=node_snapshot()
-            return self.send_json({'version':VERSION,'backendOnline':ok,'configured':valid_ltc_address(cfg['ltcAddress']) and valid_doge_address(cfg['dogeAddress']),'config':cfg,'stratumPort':STRATUM,'uptimeSeconds':int(time.time()-START),'backend':data,'nodes':nodes})
+            cfg=load_config(); ok,data=backend_snapshot(); nodes=node_snapshot(); blocks=blocks_snapshot(); mining=mining_snapshot(cfg)
+            return self.send_json({'version':VERSION,'backendOnline':ok,'configured':valid_ltc_address(cfg['ltcAddress']) and valid_doge_address(cfg['dogeAddress']),'config':cfg,'stratumPort':STRATUM,'uptimeSeconds':int(time.time()-START),'backend':data,'nodes':nodes,'blocksFound':blocks,'mining':mining})
         if p.startswith('/api/backend/'):
             sub='/' + p[len('/api/backend/'):]
             d=fetch(sub); return self.send_json(d,502 if '_error' in d else 200)
