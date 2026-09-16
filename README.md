@@ -55,7 +55,7 @@ Current design:
 - one local miner connection
 - no custodial payout wallet
 
-This architecture is intentionally kept small while real LG07 behavior is validated. An advanced full-node mode using dedicated Litecoin Core and Dogecoin Core containers may be evaluated later.
+MergeForge uses dedicated pruned Litecoin Core and Dogecoin Core containers as the authoritative parent and AuxPoW chain nodes. c2pool provides Stratum V1, VARDIFF, solo-mining coordination, and LTC+DOGE merged mining while the Core RPC interfaces remain isolated on the internal backend network.
 
 ---
 

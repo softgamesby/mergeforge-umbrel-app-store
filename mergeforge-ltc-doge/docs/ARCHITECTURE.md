@@ -10,8 +10,12 @@ MergeForge web :8096  ----HTTP----> c2pool API :8080
                                      |
 LAN LG07 ---- Stratum :3333 ---------+
                                      |
-                           embedded LTC + DOGE SPV
-                           LTC parent / DOGE AuxPoW
+                    +----------------+----------------+
+                    |                                 |
+                    v                                 v
+          Litecoin Core :9332              Dogecoin Core :22555
+          pruned authoritative             pruned authoritative
+          parent-chain node                AuxPoW merged-chain node
 ```
 
 ## External exposure
@@ -24,8 +28,12 @@ LAN LG07 ---- Stratum :3333 ---------+
 
 ## Persistence
 
+- `${APP_DATA_DIR}/data/litecoin` — pruned Litecoin Core blockchain state.
+- `${APP_DATA_DIR}/data/dogecoin` — pruned Dogecoin Core blockchain state.
 - `${APP_DATA_DIR}/data/c2pool` — c2pool state, logs and found-block database.
 - `${APP_DATA_DIR}/data/app` — MergeForge public configuration (no wallet secrets).
+- `${APP_DATA_DIR}/config` — generated private node and c2pool configuration.
+- `${APP_DATA_DIR}/secrets` — generated private RPC credentials.
 
 ## Security boundary
 
@@ -37,6 +45,8 @@ LAN LG07 ---- Stratum :3333 ---------+
 - No seed/private-key fields.
 - Umbrel authentication protects the custom UI.
 
-## Why this differs from the long-form specification
+## Runtime design
 
-The long-form design requests pruned full Litecoin/Dogecoin nodes plus a bespoke AuxPoW Stratum implementation. For the first physical milestone, MergeForge instead uses c2pool's current LTC+DOGE merged-mining path to minimize protocol-critical custom code. Full-node mode remains a Phase-2 feature after LG07 acceptance testing.
+MergeForge uses dedicated pruned Litecoin Core and Dogecoin Core containers as the authoritative chain nodes. c2pool provides Stratum V1, VARDIFF, solo-mining coordination and Litecoin/Dogecoin merged mining.
+
+The Core RPC interfaces are available only on the dedicated MergeForge backend network. Litecoin and Dogecoin use outbound-only P2P synchronization and do not publish node RPC or P2P ports on the host. The only host-published MergeForge service port is Stratum TCP 3333 for the miner.

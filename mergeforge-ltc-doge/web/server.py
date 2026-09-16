@@ -13,7 +13,7 @@ APP_DIR=Path(__file__).resolve().parent
 CONFIG=DATA/'config.json'
 START=time.time()
 
-DEFAULT={'ltcAddress':'','worker':'LG07'}
+DEFAULT={'ltcAddress':'','dogeAddress':'','worker':'LG07'}
 
 def load_config():
     try:
@@ -23,7 +23,7 @@ def load_config():
         return DEFAULT.copy()
 
 def save_config(d):
-    clean={'ltcAddress':str(d.get('ltcAddress','')).strip(), 'worker':str(d.get('worker','LG07')).strip()[:32] or 'LG07'}
+    clean={'ltcAddress':str(d.get('ltcAddress','')).strip(), 'dogeAddress':str(d.get('dogeAddress','')).strip(), 'worker':str(d.get('worker','LG07')).strip()[:32] or 'LG07'}
     tmp=CONFIG.with_suffix('.tmp'); tmp.write_text(json.dumps(clean,indent=2)); os.chmod(tmp,0o600); tmp.replace(CONFIG)
     return clean
 
@@ -52,6 +52,10 @@ def valid_ltc_address(s):
     s=s.strip()
     return bool(s) and (s.startswith('ltc1') or s[0:1] in {'L','M','3'}) and 26 <= len(s) <= 90
 
+def valid_doge_address(s):
+    s=s.strip()
+    return bool(s) and s[0:1] in {'D','A','9'} and 26 <= len(s) <= 35
+
 class H(BaseHTTPRequestHandler):
     server_version='MergeForge/0.1.0'
     def log_message(self, fmt,*args): print('[web]',fmt%args,flush=True)
@@ -66,7 +70,7 @@ class H(BaseHTTPRequestHandler):
         if p=='/api/health': return self.send_json({'ok':True,'version':VERSION})
         if p=='/api/status':
             cfg=load_config(); ok,data=backend_snapshot()
-            return self.send_json({'version':VERSION,'backendOnline':ok,'configured':valid_ltc_address(cfg['ltcAddress']),'config':cfg,'stratumPort':STRATUM,'uptimeSeconds':int(time.time()-START),'backend':data})
+            return self.send_json({'version':VERSION,'backendOnline':ok,'configured':valid_ltc_address(cfg['ltcAddress']) and valid_doge_address(cfg['dogeAddress']),'config':cfg,'stratumPort':STRATUM,'uptimeSeconds':int(time.time()-START),'backend':data})
         if p.startswith('/api/backend/'):
             sub='/' + p[len('/api/backend/'):]
             d=fetch(sub); return self.send_json(d,502 if '_error' in d else 200)
@@ -80,7 +84,8 @@ class H(BaseHTTPRequestHandler):
             n=int(self.headers.get('content-length','0')); assert n<=4096
             d=json.loads(self.rfile.read(n) or b'{}')
             if d.get('ltcAddress') and not valid_ltc_address(str(d['ltcAddress'])): return self.send_json({'error':'Enter a valid Litecoin mainnet receiving address.'},400)
-            cfg=save_config(d); return self.send_json({'ok':True,'config':cfg,'message':'Settings saved. Use the generated miner connection shown on the dashboard.'})
+            if d.get('dogeAddress') and not valid_doge_address(str(d['dogeAddress'])): return self.send_json({'error':'Enter a valid Dogecoin mainnet receiving address.'},400)
+            cfg=save_config(d); return self.send_json({'ok':True,'config':cfg,'message':'Settings saved. Use the generated LTC + DOGE miner login shown on the dashboard.'})
         except Exception as e: return self.send_json({'error':'Invalid request','detail':str(e)},400)
 
 ThreadingHTTPServer(('0.0.0.0',PORT),H).serve_forever()
