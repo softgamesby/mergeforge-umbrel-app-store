@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1
+
+- Add authoritative live Stratum mining metrics.
+- Add persistent verified Litecoin and Dogecoin block-history statistics.
+- Add live Litecoin and Dogecoin node synchronization status.
+- Prepare Umbrel-managed update path for the refreshed dashboard.
+- Retain developer-preview status pending physical Lucky Miner LG07 validation.
+
 ## 0.1.0
 
 - Initial MergeForge Umbrel app skeleton.

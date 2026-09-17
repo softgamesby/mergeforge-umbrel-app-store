@@ -2,6 +2,18 @@ name: Publish MergeForge Images
 
 on:
   workflow_dispatch:
+    inputs:
+      component:
+        description: "Image to publish"
+        required: true
+        default: "web"
+        type: choice
+        options:
+          - web
+          - c2pool
+          - litecoin
+          - dogecoin
+          - all
 
 permissions:
   contents: read
@@ -20,7 +32,7 @@ jobs:
           - name: web
             context: mergeforge-ltc-doge/web
             image: ghcr.io/softgamesby/mergeforge-web
-            tag: "0.1.0"
+            tag: "0.1.1"
 
           - name: c2pool
             context: mergeforge-ltc-doge/c2pool
@@ -57,6 +69,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish ${{ matrix.name }}
+        if: ${{ inputs.component == 'all' || inputs.component == matrix.name }}
         id: build
         uses: docker/build-push-action@v7
         with:
@@ -68,6 +81,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
 
       - name: Report manifest digest
+        if: ${{ inputs.component == 'all' || inputs.component == matrix.name }}
         run: |
           echo "${{ matrix.image }}:${{ matrix.tag }}"
           echo "digest=${{ steps.build.outputs.digest }}"

@@ -2,7 +2,7 @@ manifestVersion: 1
 id: mergeforge-ltc-doge
 name: MergeForge
 category: bitcoin
-version: "0.1.0"
+version: "0.1.1"
 tagline: Private LTC + DOGE merged solo mining on Umbrel
 description: >-
   MergeForge is a self-hosted Scrypt merged-mining hub for Litecoin and Dogecoin.

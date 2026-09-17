@@ -168,7 +168,7 @@ button.save{border:0;border-radius:9px;padding:11px 15px;font-weight:900;backgro
   <div class="card metric"><div class="label">Stale shares</div><div class="value purple-text" id="stale">—</div><div class="sub">Expired-job submissions</div></div>
   <div class="card metric"><div class="label">Best share</div><div class="value gold" id="bestShare">—</div><div class="sub">Highest difficulty</div></div>
   <div class="card metric"><div class="label">Share difficulty</div><div class="value blue" id="lastShare">—</div><div class="sub">Current VarDiff target</div></div>
-  <div class="card metric"><div class="label">Version</div><div class="value purple-text" id="version">0.1.0</div><div class="sub">MergeForge developer preview</div></div>
+  <div class="card metric"><div class="label">Version</div><div class="value purple-text" id="version">0.1.1</div><div class="sub">MergeForge developer preview</div></div>
 </section>
 
 <section class="charts">
@@ -312,7 +312,7 @@ button.save{border:0;border-radius:9px;padding:11px 15px;font-weight:900;backgro
   </div>
 </section>
 
-<div class="footer">MergeForge v0.1.0 · Developed by Mikal · LTC + DOGE · Scrypt · Umbrel</div>
+<div class="footer">MergeForge v0.1.1 · Developed by Mikal · LTC + DOGE · Scrypt · Umbrel</div>
 </div>
 
 <script>
@@ -460,7 +460,7 @@ function updateNode(prefix,node){
 async function refresh(){
   try{
     const s=await fetch('/api/status',{cache:'no-store'}).then(r=>r.json());
-    $('version').textContent=s.version||'0.1.0';
+    $('version').textContent=s.version||'0.1.1';
 
     const l=s.nodes?.litecoin||{};
     const d=s.nodes?.dogecoin||{};

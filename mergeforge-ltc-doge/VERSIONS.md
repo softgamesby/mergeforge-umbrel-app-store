@@ -1,6 +1,6 @@
 # Versions
 
-- MergeForge: 0.1.0 developer preview
+- MergeForge: 0.1.1 developer preview
 - c2pool source baseline: v0.2.0
 - Python web runtime: Python 3.12 Alpine digest-pinned base
 
