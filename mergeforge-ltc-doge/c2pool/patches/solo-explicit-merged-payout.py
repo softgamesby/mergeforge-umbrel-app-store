@@ -298,6 +298,54 @@ replace(
 )
 
 
+# ---------------------------------------------------------------------
+# RPC-only merged-mining startup fix:
+# Wire aux-work changes before the MM manager starts, and do it independently
+# of merged P2P broadcasters.  The first successful DOGE aux-work fetch then
+# rebuilds the commitment and triggers the first LTC parent template refresh.
+# ---------------------------------------------------------------------
+replace(
+    "src/c2pool/main_ltc.cpp",
+    """                mm_manager->set_state_root_provider(
+                    [mi]() -> uint256 {
+                        if (!mi) return uint256();
+                        return mi->get_the_state_root();
+                    });
+
+                mm_manager->start();
+""",
+    """                mm_manager->set_state_root_provider(
+                    [mi]() -> uint256 {
+                        if (!mi) return uint256();
+                        return mi->get_the_state_root();
+                    });
+
+                // Aux work changes must refresh parent Stratum work even when
+                // merged-chain P2P broadcasters are intentionally disabled.
+                // Install before start() so the first successful aux fetch
+                // produces the first valid LTC+DOGE merged-mining template.
+                mm_manager->set_on_work_changed([&web_server]() {
+                    web_server.trigger_work_refresh_debounced();
+                });
+
+                mm_manager->start();
+"""
+)
+
+replace(
+    "src/c2pool/main_ltc.cpp",
+    """                    // When merged mining aux work changes (new DOGE block),
+                    // push fresh stratum work so miners get the new commitment.
+                    mm_manager->set_on_work_changed([&web_server]() {
+                        web_server.trigger_work_refresh_debounced();
+                    });
+
+                    // Wire DOGE block verifier.
+""",
+    """                    // Wire DOGE block verifier.
+"""
+)
+
 # solo startup null-p2p fix
 replace(
     "src/c2pool/main_ltc.cpp",
