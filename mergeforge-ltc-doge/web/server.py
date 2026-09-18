@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 PORT=int(os.getenv('PORT','8096'))
 C2POOL=os.getenv('C2POOL_URL','http://c2pool:8080').rstrip('/')
 NODE_STATUS=os.getenv('NODE_STATUS_URL','http://node_status:8097').rstrip('/')
-VERSION=os.getenv('APP_VERSION','0.1.1')
+VERSION=os.getenv('APP_VERSION','0.1.2')
 STRATUM=os.getenv('STRATUM_PORT','3333')
 DATA=Path(os.getenv('DATA_DIR','/data'))
 DATA.mkdir(parents=True, exist_ok=True)
@@ -30,7 +30,7 @@ def save_config(d):
 
 def fetch(path, timeout=3):
     try:
-        req=urllib.request.Request(C2POOL+path, headers={'User-Agent':'MergeForge/0.1.1'})
+        req=urllib.request.Request(C2POOL+path, headers={'User-Agent':'MergeForge/0.1.2'})
         with urllib.request.urlopen(req, timeout=timeout) as r:
             raw=r.read()
             ctype=r.headers.get('content-type','')
@@ -53,7 +53,7 @@ def node_snapshot(timeout=5):
     try:
         req=urllib.request.Request(
             NODE_STATUS + '/status',
-            headers={'User-Agent':'MergeForge/0.1.1'}
+            headers={'User-Agent':'MergeForge/0.1.2'}
         )
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return json.loads(r.read())
@@ -196,7 +196,7 @@ def valid_doge_address(s):
     return bool(s) and s[0:1] in {'D','A','9'} and 26 <= len(s) <= 35
 
 class H(BaseHTTPRequestHandler):
-    server_version='MergeForge/0.1.1'
+    server_version='MergeForge/0.1.2'
     def log_message(self, fmt,*args): print('[web]',fmt%args,flush=True)
     def send_json(self,obj,code=200):
         b=json.dumps(obj,separators=(',',':')).encode(); self.send_response(code); self.headers_common(); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(b))); self.end_headers(); self.wfile.write(b)
