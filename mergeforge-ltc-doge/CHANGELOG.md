@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2
+
+- Fix RPC-only merged-mining startup so the first Dogecoin AuxPoW work refresh triggers a valid Litecoin parent template.
+- Publish and pin c2pool 0.1.1 and web 0.1.2 multi-architecture images.
+- Validate physical Lucky Miner LG07 mining with live accepted shares and non-zero hashrate.
+- Confirm explicit Litecoin + Dogecoin merged-mining login parsing and live Dogecoin AuxPoW template generation.
+- Confirm Litecoin and Dogecoin nodes remain fully synchronized and ready.
+- Pass final ARM64 runtime smoke tests for web, c2pool, Litecoin Core, and Dogecoin Core.
+
 ## 0.1.1
 
 - Add authoritative live Stratum mining metrics.
