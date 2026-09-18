@@ -34,7 +34,7 @@ jobs:
       - name: Test c2pool
         run: |
           docker run --rm --pull=always --platform linux/arm64 \
-            ghcr.io/softgamesby/mergeforge-c2pool@sha256:0c007199a8c4557ae8ac931997bb123b9245cbaba0f2ed423a36db24a08c1420 \
+            ghcr.io/softgamesby/mergeforge-c2pool@sha256:3ed93ff26b21bd40a00f337fb3f4eb44a56eb8e71d78983f95a2e160d8434530 \
             /usr/local/bin/c2pool-ltc --help
 
       - name: Test Litecoin Core

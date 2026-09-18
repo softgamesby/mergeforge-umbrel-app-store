@@ -10,7 +10,7 @@ echo "Building MergeForge web image..."
 docker build --platform "${PLATFORM}" -t mergeforge-web:0.1.2 web
 
 echo "Building c2pool backend from upstream tag v0.2.0..."
-docker build --platform "${PLATFORM}" -t mergeforge-c2pool:0.1.0 c2pool
+docker build --platform "${PLATFORM}" -t mergeforge-c2pool:0.1.1 c2pool
 
 echo "Building Litecoin Core v0.21.5.8..."
 docker build --platform "${PLATFORM}" -t mergeforge-litecoin:0.21.5.8 litecoin

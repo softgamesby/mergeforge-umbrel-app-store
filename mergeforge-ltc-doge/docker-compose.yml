@@ -5,7 +5,7 @@ services:
       APP_PORT: 8096
 
   init:
-    image: ghcr.io/softgamesby/mergeforge-web:0.1.1@sha256:69a57a61859a9a05c551814dcf5102c07ab7325c00b6b270f38c572bc32382fa
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.2@sha256:1ab99eef81f8ee99cbfb717527c71dac681ddeefe1993237db25a7eb43eb2165
     restart: "no"
     user: "0:0"
     network_mode: none
@@ -93,7 +93,7 @@ services:
         max-file: "3"
 
   c2pool:
-    image: ghcr.io/softgamesby/mergeforge-c2pool:0.1.0@sha256:0c007199a8c4557ae8ac931997bb123b9245cbaba0f2ed423a36db24a08c1420
+    image: ghcr.io/softgamesby/mergeforge-c2pool:0.1.1@sha256:3ed93ff26b21bd40a00f337fb3f4eb44a56eb8e71d78983f95a2e160d8434530
     restart: on-failure
     stop_grace_period: 30s
     init: true
@@ -142,7 +142,7 @@ services:
         max-file: "3"
 
   node_status:
-    image: ghcr.io/softgamesby/mergeforge-web:0.1.1@sha256:69a57a61859a9a05c551814dcf5102c07ab7325c00b6b270f38c572bc32382fa
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.2@sha256:1ab99eef81f8ee99cbfb717527c71dac681ddeefe1993237db25a7eb43eb2165
     restart: on-failure
     stop_grace_period: 10s
     init: true
@@ -184,7 +184,7 @@ services:
         max-file: "2"
 
   web:
-    image: ghcr.io/softgamesby/mergeforge-web:0.1.1@sha256:69a57a61859a9a05c551814dcf5102c07ab7325c00b6b270f38c572bc32382fa
+    image: ghcr.io/softgamesby/mergeforge-web:0.1.2@sha256:1ab99eef81f8ee99cbfb717527c71dac681ddeefe1993237db25a7eb43eb2165
     restart: on-failure
     stop_grace_period: 10s
     init: true
@@ -193,7 +193,7 @@ services:
       C2POOL_URL: http://c2pool:8080
       NODE_STATUS_URL: http://node_status:8097
       STRATUM_PORT: "3333"
-      APP_VERSION: "0.1.1"
+      APP_VERSION: "0.1.2"
       DATA_DIR: /data
     volumes:
       - ${APP_DATA_DIR}/data/app:/data
