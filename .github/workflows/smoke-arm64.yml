@@ -28,7 +28,7 @@ jobs:
       - name: Test web
         run: |
           docker run --rm --pull=always --platform linux/arm64 \
-            ghcr.io/softgamesby/mergeforge-web@sha256:87b57da9709508ebb51316992d62b0b68e6e6ff222981fe00a11e87fd6e0686b \
+            ghcr.io/softgamesby/mergeforge-web@sha256:8643a6b91bbe1af55912692d652f7456b98b3bb01e5e9ab9187af67f7b8fde05 \
             python --version
 
       - name: Test c2pool
