@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3
+
+- Add a modern MergeForge `M` launcher and web icon.
+- Replace model-specific miner branding with generic Scrypt Miner terminology.
+- Use `ScryptMiner` as the default Stratum worker suffix.
+- Refresh public Community Store repository, support, and release metadata.
+- Preserve the validated Litecoin + Dogecoin merged-mining runtime from 0.1.2.
+
 ## 0.1.2
 
 - Fix RPC-only merged-mining startup so the first Dogecoin AuxPoW work refresh triggers a valid Litecoin parent template.

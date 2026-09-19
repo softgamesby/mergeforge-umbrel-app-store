@@ -1,4 +1,4 @@
-# MergeForge 0.1.2 Architecture
+# MergeForge 0.1.3 Architecture
 
 ## Container flow
 
@@ -8,7 +8,7 @@ Umbrel app_proxy
       v
 MergeForge web :8096  ----HTTP----> c2pool API :8080
                                      |
-LAN LG07 ---- Stratum :3333 ---------+
+LAN Scrypt Miner ---- Stratum :3333 ---------+
                                      |
                     +----------------+----------------+
                     |                                 |
@@ -23,7 +23,7 @@ LAN LG07 ---- Stratum :3333 ---------+
 | Port | Exposure | Purpose |
 |---|---|---|
 | Umbrel app URL | Umbrel proxy | Authenticated dashboard |
-| 3333/tcp | LAN | Scrypt Stratum for LG07 |
+| 3333/tcp | LAN | Scrypt Stratum for miners |
 | 8080/tcp | Internal only | c2pool API/dashboard backend |
 
 ## Persistence

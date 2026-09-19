@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 PORT=int(os.getenv('PORT','8096'))
 C2POOL=os.getenv('C2POOL_URL','http://c2pool:8080').rstrip('/')
 NODE_STATUS=os.getenv('NODE_STATUS_URL','http://node_status:8097').rstrip('/')
-VERSION=os.getenv('APP_VERSION','0.1.2')
+VERSION=os.getenv('APP_VERSION','0.1.3')
 STRATUM=os.getenv('STRATUM_PORT','3333')
 DATA=Path(os.getenv('DATA_DIR','/data'))
 DATA.mkdir(parents=True, exist_ok=True)
@@ -14,7 +14,7 @@ APP_DIR=Path(__file__).resolve().parent
 CONFIG=DATA/'config.json'
 START=time.time()
 
-DEFAULT={'ltcAddress':'','dogeAddress':'','worker':'LG07'}
+DEFAULT={'ltcAddress':'','dogeAddress':'','worker':'ScryptMiner'}
 
 def load_config():
     try:
@@ -24,13 +24,13 @@ def load_config():
         return DEFAULT.copy()
 
 def save_config(d):
-    clean={'ltcAddress':str(d.get('ltcAddress','')).strip(), 'dogeAddress':str(d.get('dogeAddress','')).strip(), 'worker':str(d.get('worker','LG07')).strip()[:32] or 'LG07'}
+    clean={'ltcAddress':str(d.get('ltcAddress','')).strip(), 'dogeAddress':str(d.get('dogeAddress','')).strip(), 'worker':str(d.get('worker','ScryptMiner')).strip()[:32] or 'ScryptMiner'}
     tmp=CONFIG.with_suffix('.tmp'); tmp.write_text(json.dumps(clean,indent=2)); os.chmod(tmp,0o600); tmp.replace(CONFIG)
     return clean
 
 def fetch(path, timeout=3):
     try:
-        req=urllib.request.Request(C2POOL+path, headers={'User-Agent':'MergeForge/0.1.2'})
+        req=urllib.request.Request(C2POOL+path, headers={'User-Agent':'MergeForge/0.1.3'})
         with urllib.request.urlopen(req, timeout=timeout) as r:
             raw=r.read()
             ctype=r.headers.get('content-type','')
@@ -53,7 +53,7 @@ def node_snapshot(timeout=5):
     try:
         req=urllib.request.Request(
             NODE_STATUS + '/status',
-            headers={'User-Agent':'MergeForge/0.1.2'}
+            headers={'User-Agent':'MergeForge/0.1.3'}
         )
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return json.loads(r.read())
@@ -94,7 +94,7 @@ def mining_snapshot(cfg):
         if isinstance(workers, dict) and workers:
             ltc = str(cfg.get('ltcAddress', '')).strip()
             doge = str(cfg.get('dogeAddress', '')).strip()
-            worker_name = str(cfg.get('worker', 'LG07')).strip() or 'LG07'
+            worker_name = str(cfg.get('worker', 'ScryptMiner')).strip() or 'ScryptMiner'
 
             selected = None
 
@@ -196,7 +196,7 @@ def valid_doge_address(s):
     return bool(s) and s[0:1] in {'D','A','9'} and 26 <= len(s) <= 35
 
 class H(BaseHTTPRequestHandler):
-    server_version='MergeForge/0.1.2'
+    server_version='MergeForge/0.1.3'
     def log_message(self, fmt,*args): print('[web]',fmt%args,flush=True)
     def send_json(self,obj,code=200):
         b=json.dumps(obj,separators=(',',':')).encode(); self.send_response(code); self.headers_common(); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(b))); self.end_headers(); self.wfile.write(b)

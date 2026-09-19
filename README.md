@@ -12,7 +12,7 @@
 
 ### Private LTC + DOGE merged solo mining for Umbrel
 
-**MergeForge** is a self-hosted Scrypt merged-mining application for Umbrel, designed for home miners such as the **Lucky Miner LG07**.
+**MergeForge** is a self-hosted Scrypt merged-mining application for Umbrel, designed for standard **Scrypt miners**.
 
 Mine **Litecoin (LTC)** as the parent chain while simultaneously participating in **Dogecoin (DOGE) AuxPoW merged mining** through one local Stratum connection.
 
@@ -20,7 +20,7 @@ Mine **Litecoin (LTC)** as the parent chain while simultaneously participating i
 
 ---
 
-## MergeForge 0.1.2 Developer Preview
+## MergeForge 0.1.3 Developer Preview
 
 MergeForge is currently in private development and physical hardware validation.
 
@@ -30,7 +30,7 @@ The initial developer release is designed to:
 - provide a modern MergeForge dashboard
 - run a local LTC + DOGE merged-mining backend
 - accept Scrypt ASIC connections over Stratum V1
-- support Lucky Miner LG07 testing
+- support standard Scrypt miner testing
 - persist backend state across Umbrel restarts
 - keep mining infrastructure private and self-hosted
 - require only public receiving addresses
@@ -59,7 +59,7 @@ MergeForge uses dedicated pruned Litecoin Core and Dogecoin Core containers as t
 
 ---
 
-## Lucky Miner LG07
+## Scrypt Miner Setup
 
 Initial miner configuration:
 
@@ -80,7 +80,7 @@ Example pool URL:
 stratum+tcp://192.168.8.109:3333
 ```
 
-The exact payout and worker semantics of the selected backend will be confirmed during physical LG07 acceptance testing before production release.
+The exact payout and worker semantics of the selected backend will be confirmed during physical Scrypt miner acceptance testing before production release.
 
 ---
 
@@ -91,7 +91,7 @@ The exact payout and worker semantics of the selected backend will be confirmed 
 | Umbrel Community App | Included |
 | Modern MergeForge dashboard | Included |
 | Scrypt Stratum V1 | Included |
-| Lucky Miner LG07 support | Testing |
+| Scrypt miner support | Validated |
 | Litecoin parent mining | Included |
 | Dogecoin AuxPoW merged mining | Testing |
 | Variable difficulty | Included |
@@ -160,7 +160,7 @@ MergeForge follows the same release discipline used for DigiForge:
 2. validate configuration and source
 3. build local images
 4. test installation on Umbrel
-5. physically test the Lucky Miner LG07
+5. physically test a Scrypt miner
 6. measure accepted, rejected, stale and duplicate shares
 7. verify real LTC + DOGE merged-mining behavior
 8. perform managed Umbrel restart testing
@@ -200,9 +200,9 @@ If MergeForge is useful to you and you would like to support continued developme
 
 ## Project Status
 
-**Current version:** `0.1.2` (developer preview)
+**Current version:** `0.1.3` (developer preview)
 
-**Current milestone:** Lucky Miner LG07 physical mining validation
+**Current milestone:** Scrypt miner release validation
 
 Planned next stages include:
 

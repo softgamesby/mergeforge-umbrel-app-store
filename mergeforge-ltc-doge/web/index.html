@@ -135,7 +135,7 @@ button.save{border:0;border-radius:9px;padding:11px 15px;font-weight:900;backgro
   <div class="chips">
     <div class="chip purple">♥ <span>Support MergeForge</span></div>
     <div class="chip" id="backendChip"><span class="dot"></span><span>Checking backend</span></div>
-    <div class="chip" id="minerChip"><span class="dot"></span><span>LG07 waiting</span></div>
+    <div class="chip" id="minerChip"><span class="dot"></span><span>Scrypt Miner waiting</span></div>
   </div>
 </header>
 
@@ -168,7 +168,7 @@ button.save{border:0;border-radius:9px;padding:11px 15px;font-weight:900;backgro
   <div class="card metric"><div class="label">Stale shares</div><div class="value purple-text" id="stale">—</div><div class="sub">Expired-job submissions</div></div>
   <div class="card metric"><div class="label">Best share</div><div class="value gold" id="bestShare">—</div><div class="sub">Highest difficulty</div></div>
   <div class="card metric"><div class="label">Share difficulty</div><div class="value blue" id="lastShare">—</div><div class="sub">Current VarDiff target</div></div>
-  <div class="card metric"><div class="label">Version</div><div class="value purple-text" id="version">0.1.2</div><div class="sub">MergeForge developer preview</div></div>
+  <div class="card metric"><div class="label">Version</div><div class="value purple-text" id="version">0.1.3</div><div class="sub">MergeForge developer preview</div></div>
 </section>
 
 <section class="charts">
@@ -223,12 +223,12 @@ button.save{border:0;border-radius:9px;padding:11px 15px;font-weight:900;backgro
 
 <section class="bottom">
   <div class="card section">
-    <h3>🔗 LG07 Connection</h3>
+    <h3>🔗 Scrypt Miner Connection</h3>
     <p>Point your Scrypt miner to this Stratum endpoint.</p>
 
     <div class="rows">
       <div class="row"><span class="k">Pool URL</span><span class="v" id="poolUrl">stratum+tcp://umbrel.local:3333</span><button class="copy" onclick="copyText('poolUrl')">▣</button></div>
-      <div class="row"><span class="k">Username</span><span class="v" id="minerUser">YOUR_LTC_ADDRESS,YOUR_DOGE_ADDRESS.LG07</span><button class="copy" onclick="copyText('minerUser')">▣</button></div>
+      <div class="row"><span class="k">Username</span><span class="v" id="minerUser">YOUR_LTC_ADDRESS,YOUR_DOGE_ADDRESS.ScryptMiner</span><button class="copy" onclick="copyText('minerUser')">▣</button></div>
       <div class="row"><span class="k">Password</span><span class="v" id="minerPass">x</span><button class="copy" onclick="copyText('minerPass')">▣</button></div>
       <div class="row"><span class="k">VarDiff</span><span class="v green">enabled</span><span></span></div>
     </div>
@@ -241,7 +241,7 @@ button.save{border:0;border-radius:9px;padding:11px 15px;font-weight:900;backgro
       <div class="setup-grid">
         <input id="ltcAddress" placeholder="Litecoin receiving address">
         <input id="dogeAddress" placeholder="Dogecoin receiving address">
-        <input id="worker" value="LG07" maxlength="32" placeholder="Worker name">
+        <input id="worker" value="ScryptMiner" maxlength="32" placeholder="Worker name">
         <button class="save" onclick="save()">Save payout settings</button>
       </div>
       <div class="msg" id="msg">No private keys are stored.</div>
@@ -312,7 +312,7 @@ button.save{border:0;border-radius:9px;padding:11px 15px;font-weight:900;backgro
   </div>
 </section>
 
-<div class="footer">MergeForge v0.1.2 · Developed by Mikal · LTC + DOGE · Scrypt · Umbrel</div>
+<div class="footer">MergeForge v0.1.3 · Developed by Mikal · LTC + DOGE · Scrypt · Umbrel</div>
 </div>
 
 <script>
@@ -460,7 +460,7 @@ function updateNode(prefix,node){
 async function refresh(){
   try{
     const s=await fetch('/api/status',{cache:'no-store'}).then(r=>r.json());
-    $('version').textContent=s.version||'0.1.2';
+    $('version').textContent=s.version||'0.1.3';
 
     const l=s.nodes?.litecoin||{};
     const d=s.nodes?.dogecoin||{};
@@ -492,7 +492,7 @@ async function refresh(){
     if(num(m.hashrate)!==null)addSample(samples.hash,num(m.hashrate));
 
     const wc=num(m.workers)||0;
-    setChip('minerChip',wc>0?'LG07 connected':'LG07 waiting',wc>0);
+    setChip('minerChip',wc>0?'Scrypt Miner connected':'Scrypt Miner waiting',wc>0);
 
     const bothReady=!!l.ready&&!!d.ready;
     if(!l.online||!d.online){
@@ -509,7 +509,7 @@ async function refresh(){
       $('heroText').textContent='The blockchain and Stratum backend are ready. Save your public LTC and DOGE receiving addresses below.';
     }else{
       $('heroTitle').textContent='Ready to mine';
-      $('heroText').textContent='Private LTC + DOGE merged solo mining is online. Point your LG07 to the Stratum URL below and monitor mining health in real time.';
+      $('heroText').textContent='Private LTC + DOGE merged solo mining is online. Point your Scrypt miner to the Stratum URL below and monitor mining health in real time.';
     }
 
     $('stratumTitle').textContent=s.backendOnline?'Stratum online':'Stratum starting';
@@ -519,12 +519,12 @@ async function refresh(){
 
     if(s.config?.ltcAddress)$('ltcAddress').value=s.config.ltcAddress;
     if(s.config?.dogeAddress)$('dogeAddress').value=s.config.dogeAddress;
-    $('worker').value=s.config?.worker||'LG07';
+    $('worker').value=s.config?.worker||'ScryptMiner';
 
     if(s.config?.ltcAddress&&s.config?.dogeAddress){
-      $('minerUser').textContent=`${s.config.ltcAddress},${s.config.dogeAddress}.${s.config.worker||'LG07'}`;
+      $('minerUser').textContent=`${s.config.ltcAddress},${s.config.dogeAddress}.${s.config.worker||'ScryptMiner'}`;
     }else{
-      $('minerUser').textContent='YOUR_LTC_ADDRESS,YOUR_DOGE_ADDRESS.LG07';
+      $('minerUser').textContent='YOUR_LTC_ADDRESS,YOUR_DOGE_ADDRESS.ScryptMiner';
     }
 
     $('hashChartNote').textContent=samples.hash.length>1?'Live browser samples · '+samples.hash.length+' points':'Collecting live hashrate data…';
