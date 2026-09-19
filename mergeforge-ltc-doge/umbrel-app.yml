@@ -19,9 +19,9 @@ support: https://github.com/softgamesby/mergeforge-umbrel-app-store/issues
 port: 8096
 gallery: []
 releaseNotes: >-
-  Adds the new MergeForge launcher icon and refreshed branding, replaces model-specific
-  miner wording with generic Scrypt Miner support, and updates the dashboard and setup
-  guidance while retaining the validated Litecoin + Dogecoin merged-mining backend.
+  Fixes the Umbrel launcher icon by using the explicit public MergeForge icon URL,
+  makes the Support MergeForge control clickable, and updates dashboard branding
+  while retaining the validated Litecoin + Dogecoin merged-mining backend.
 dependencies: []
 path: ""
 defaultUsername: ""

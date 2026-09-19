@@ -57,7 +57,7 @@ def rpc(chain):
         headers={
             "Authorization": f"Basic {auth}",
             "Content-Type": "application/json",
-            "User-Agent": "MergeForge-NodeStatus/0.1.3",
+            "User-Agent": "MergeForge-NodeStatus/0.1.4",
         },
         method="POST",
     )
@@ -98,7 +98,7 @@ def snapshot():
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "MergeForge-NodeStatus/0.1.3"
+    server_version = "MergeForge-NodeStatus/0.1.4"
 
     def log_message(self, fmt, *args):
         print("[node-status]", fmt % args, flush=True)

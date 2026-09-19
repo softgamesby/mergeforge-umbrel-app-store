@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4
+
+- Fix the Umbrel launcher icon with an explicit public icon URL.
+- Make the top Support MergeForge control navigate to the support section.
+- Publish the refreshed dashboard as web 0.1.4.
+- Retain the validated Litecoin + Dogecoin merged-mining backend.
+
 ## 0.1.3
 
 - Add a modern MergeForge `M` launcher and web icon.
