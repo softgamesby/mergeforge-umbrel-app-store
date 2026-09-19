@@ -20,7 +20,7 @@ Mine **Litecoin (LTC)** as the parent chain while simultaneously participating i
 
 ---
 
-## MergeForge 0.1.3 Developer Preview
+## MergeForge 0.1.4 Developer Preview
 
 MergeForge is currently in private development and physical hardware validation.
 
@@ -200,7 +200,7 @@ If MergeForge is useful to you and you would like to support continued developme
 
 ## Project Status
 
-**Current version:** `0.1.3` (developer preview)
+**Current version:** `0.1.4` (developer preview)
 
 **Current milestone:** Scrypt miner release validation
 
